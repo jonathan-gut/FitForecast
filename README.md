@@ -1,12 +1,15 @@
 ## Getting Started 
 
 ### 1) Prereqs
-- Python **3.10+**
-- Git
+- **Python** 3.10+
+- **Node.js** 18+ (20.19+ recommended)
+- **Git**
+
+## ⚙️ Backend Setup (Flask)
 
 ### 2) Clone & enter repo
 ```bash
-git clone https://github.com/jonathan-gut/FitForecast.git.git
+git clone https://github.com/jonathan-gut/FitForecast.git
 cd FitForecast
 ```
 
@@ -50,3 +53,49 @@ You should see:
 ```json
 {"status":"Flask app working"}
 ```
+
+## 💻 Frontend Setup (React + Vite)
+
+### 7) Navigate to frontend 
+
+```bash
+cd frontend
+```
+
+### 8) Install dependencies
+```bash
+npm install
+```
+
+### 9) Development Proxy
+
+Your React dev server (Vite) runs on http://localhost:5173,
+and proxies API calls (like /health and /api/...) to the Flask backend on http://localhost:5050.
+
+This is configured in frontend/vite.config.js:
+
+```js
+server: {
+  proxy: {
+    "/health": "http://localhost:5050",
+    "/api": "http://localhost:5050"
+  }
+}
+```
+
+### 10) Run the frontend
+
+```bash
+npm run dev
+```
+Then open:
+```
+http://localhost:5173
+```
+You should see:
+```json
+FitForecast
+Backend health: ✅ Flask app working
+```
+
+
