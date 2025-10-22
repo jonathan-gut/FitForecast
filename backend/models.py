@@ -1,27 +1,44 @@
-# This file holds classes for our 'models' such as user profile, user, items, etc. 
-# Instances of these classes will be loaded from database
-# We can change this as needed 
+"""This file holds classes for our 'models' such as user profile, user, items, etc. 
+Instances of these classes will be loaded from database
+We can change this as needed  """
 
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, JSON, Enum
+from sqlalchemy.orm import relationship
+from backend.db import Base
+import enum
 
-db = SQLAlchemy()
+class RoleEnum(str, enum.Enum):
+    member = "member"
+    admin = "admin"
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(256), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.String(20), default="member", nullable=False)
-    profile = db.relationship("Profile", uselist=False, backref="user")
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    role = Column(Enum(RoleEnum), nullable=False, default=RoleEnum.member)
+    profile = relationship("Profile", back_populates="user", uselist=False)
 
-# TODO - Finish implementing
-class Profile(db.Model):
-    pass
+class Profile(Base):
+    __tablename__ = "profiles"
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    location_text = Column(String(255))
+    units = Column(String(1), default="F")  # 'F' or 'C'
+    user = relationship("User", back_populates="profile")
 
-# TODO - Finish implementing
-class Item(db.Model):
-    pass
+class Item(Base):
+    __tablename__ = "items"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(120), nullable=False)
+    category = Column(String(80))
+    formality = Column(String(40))        # casual|business|formal|workout...
+    warmth_score = Column(Integer)        # e.g., 1-10
+    activity_comfort = Column(String(80)) # indoor|outdoor|workout...
 
-# TODO - Finish implementing
-class Recommendation(db.Model):
-    pass
+class Recommendation(Base):
+    __tablename__ = "recommendations"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    occasion = Column(String(80), nullable=False)
+    weather_snapshot = Column(JSON)       # store the API response summary
+    outfit = Column(JSON)                 # list of item ids/names
