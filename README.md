@@ -31,17 +31,41 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 5) Environment variables
+### 5) PostgreSQL Setup (first-time only)
+Start Postgres and create the local database:
+```
+brew services start postgresql@16           # macOS (if not running already)
+createdb fitforecast
+```
+ensure psql is in your PATH (Apple Silicon):
+```
+echo 'export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+check with
+```
+psql fitforecast -c "\dt"
+```
+
+### 6) Environment variables
+
 Copy the example file and edit as needed:
 ```bash
 cp .env.dist .env
 ```
 **.env keys used now**
-- `PORT` – optional; defaults to **5050** if not set.
+- Set 
+```
+DATABASE_URL=postgresql+psycopg2://<your-username>@localhost:5432/fitforecast
+PORT=5050
+```
+
+Replace <your-username> with your macOS login name
 
 *(Other keys in `.env.dist` like `DATABASE_URL`, `JWT_SECRET_KEY`, `WEATHER_API_KEY` are placeholders for upcoming features.)*
 
-### 6) Run the backend
+### 7) Run the backend + Test
 ```bash
 python backend/app.py
 ```
@@ -54,20 +78,32 @@ You should see:
 {"status":"Flask app working"}
 ```
 
+Also run/open
+```
+curl http://localhost:5050/api/items
+```
+You should see:
+```json
+[]
+```
+
+Note: Empty right now because we have nothing in our database
+
+
 ## 💻 Frontend Setup (React + Vite)
 
-### 7) Navigate to frontend 
+### 1) Navigate to frontend 
 
 ```bash
 cd frontend
 ```
 
-### 8) Install dependencies
+### 2) Install dependencies
 ```bash
 npm install
 ```
 
-### 9) Development Proxy
+### 3) Development Proxy
 
 Your React dev server (Vite) runs on http://localhost:5173,
 and proxies API calls (like /health and /api/...) to the Flask backend on http://localhost:5050.
@@ -83,7 +119,7 @@ server: {
 }
 ```
 
-### 10) Run the frontend
+### 4) Run the frontend
 
 ```bash
 npm run dev
