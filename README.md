@@ -66,8 +66,9 @@ Replace <your-username> with your macOS login name
 *(Other keys in `.env.dist` like `DATABASE_URL`, `JWT_SECRET_KEY`, `WEATHER_API_KEY` are placeholders for upcoming features.)*
 
 ### 7) Run the backend + Test
+Run the backend flask app (as a module)
 ```bash
-python backend/app.py
+python -m backend.app 
 ```
 Then open:
 ```

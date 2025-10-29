@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import StatusBanner from "../components/StatusBanner";
 import "./HomePage.css";
 
 export default function HomePage() {
@@ -6,6 +7,8 @@ export default function HomePage() {
 
   return (
     <div className="homepage">
+      <StatusBanner />
+
       <h1 className="title">FitForecast</h1>
 
       <div className="button-container">
