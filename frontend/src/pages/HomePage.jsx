@@ -12,10 +12,18 @@ export default function HomePage() {
       <h1 className="title">FitForecast</h1>
 
       <div className="button-container">
-        <button className="button login-button">Login</button>
+        <button
+          className="button login-button"
+          onClick={() => navigate("/login")}
+          aria-label="Go to Login"
+        >
+          Login
+        </button>
+
         <button
           className="button signup-button"
           onClick={() => navigate("/signup")}
+          aria-label="Go to Sign Up"
         >
           Sign Up
         </button>
