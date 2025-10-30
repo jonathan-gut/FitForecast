@@ -1,9 +1,12 @@
 import os
-
 from datetime import timedelta
-from flask import Flask, jsonify
+
+import requests
+from flask import Flask, jsonify, request
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
+
 from backend.db import engine, Base, SessionLocal
 from backend.models import Item
 from backend.auth import auth_bp
