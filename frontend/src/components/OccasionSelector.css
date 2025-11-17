@@ -1,0 +1,62 @@
+.occasion-selector {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 2px solid #dce6ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.occasion-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.occasion-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.occasion-options {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.option-card {
+  width: 75px;
+  height: 75px;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+  background: white;
+  color: #222;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: .2s ease;
+}
+
+.option-card:hover {
+  border-color: #6699ff;
+  transform: translateY(-2px);
+}
+
+.option-card.active {
+  border-color: #6699ff;
+  background: #eaf2ff;
+}
+
+.option-icon img {
+  width: 26px;
+  height: 26px;
+  filter: brightness(0) saturate(100%);
+}
