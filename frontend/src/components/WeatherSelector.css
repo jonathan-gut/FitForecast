@@ -1,0 +1,133 @@
+/* MAIN COMPONENT CONTAINER */
+.weather-box {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  border: 2px solid #dce6ff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TABS */
+.weather-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.weather-tab {
+  padding: 6px 12px;
+  border-radius: 10px 10px 0 0;
+  background: #f2f5ff;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #224;
+  transition: 0.25s ease;
+}
+
+.weather-tab.active {
+  background: #fff;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+  color: #0f287a;
+}
+
+/* HEADER */
+.weather-title {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* CONTENT AREA */
+.weather-content {
+  margin-top: 24px;
+  border: 2px solid #dce6ff;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TEXT LABELS */
+.section-title {
+  margin: 12px 0 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* SLIDER */
+.temp-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #5ab0ff, #ffd66b, #ff7979);
+  appearance: none;
+  cursor: pointer;
+}
+
+.temp-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #a855f7;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.25);
+}
+
+/* SLIDER LABELS */
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #5a5a5a;
+}
+
+/* CONDITION GRID — ONE ROW */
+.condition-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* SMALLER WEATHER BUTTONS */
+.condition-card {
+  width: 75px;
+  height: 75px;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: .2s ease;
+}
+
+.condition-card:hover {
+  border-color: #6699ff;
+  transform: translateY(-2px);
+}
+
+.condition-card.active {
+  border-color: #6699ff;
+  background: #eaf2ff;
+}
+
+/* ICONS SMALLER */
+.condition-icon img {
+  width: 26px;
+  height: 26px;
+  filter: brightness(0) saturate(100%);
+}

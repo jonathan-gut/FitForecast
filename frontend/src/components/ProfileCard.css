@@ -1,0 +1,19 @@
+/* ProfileCard component styles */
+.profile-card {
+  background: #ffffff;
+  color: #222;
+  padding: 10px 16px;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+  min-width: 220px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.profile-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}

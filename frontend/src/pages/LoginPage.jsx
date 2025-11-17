@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiLogin } from "../api/auth";
 import { saveToken } from "../authStore";
+import "./LoginPage.css";
 
 export default function LoginPage() {
   const nav = useNavigate();
@@ -22,10 +23,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, width: 300 }}>
-        <h2>Log in</h2>
-        {err && <div style={{ color: "crimson" }}>{err}</div>}
+    <div className="login-page">
+      <h1 className="title">Log in to your account</h1>
+      {err && <div style={{ color: "crimson", marginBottom: 12 }}>{err}</div>}
+      <form className="login-form" onSubmit={onSubmit}>
         <input
           placeholder="Email"
           value={form.email}
@@ -37,7 +38,7 @@ export default function LoginPage() {
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
-        <button type="submit">Log in</button>
+        <button className="button" type="submit">Log in</button>
       </form>
     </div>
   );
