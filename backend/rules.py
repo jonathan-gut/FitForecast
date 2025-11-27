@@ -1,6 +1,8 @@
-from typing import List, Dict
-from backend.models import Item
+# backend/rules.py
+
+from typing import List, Dict, Optional
 from collections import defaultdict
+from backend.models import Item
 
 # Map occasions to desired formality + activity_comfort
 OCCASION_PROFILES: Dict[str, Dict[str, str]] = {
@@ -29,15 +31,20 @@ def temp_to_warmth_band(temp_f: float) -> int:
         return 7
     return 9
 
-def score_item(item: Item, temp_f: float, occasion: str) -> float:
+def score_item(
+    item: Item,
+    temp_f: float,
+    occasion: str,
+    condition: Optional[str] = None,
+) -> float:
     """
     Higher score = better match.
     Combine:
       - warmth distance
       - formality match
       - activity_comfort match
+      - (optionally) weather condition
     """
-    # if item is missing key fields, down-rank it
     if item.warmth_score is None:
         return -999
 
@@ -53,7 +60,6 @@ def score_item(item: Item, temp_f: float, occasion: str) -> float:
         if item.formality == desired_formality:
             formality_bonus = 3.0
         elif item.formality in ("casual", "business") and desired_formality in ("casual", "business"):
-            # e.g. casual vs business casual, close enough
             formality_bonus = 1.0
 
     activity_bonus = 0.0
@@ -61,15 +67,41 @@ def score_item(item: Item, temp_f: float, occasion: str) -> float:
         if item.activity_comfort == desired_activity:
             activity_bonus = 2.0
 
-    # Base score: higher = better
+    # Base score
     score = 10.0
     score -= warmth_penalty * 1.2
     score += formality_bonus
     score += activity_bonus
 
+    # ---- Weather condition adjustment (simple) ----
+    if condition:
+        condition = condition.lower()
+        # Very hot & sunny -> penalize warm items
+        if condition == "sunny" and temp_f >= 85:
+            if item.warmth_score >= 6:
+                score -= 3.0
+        # Rainy -> small bonus for boots, outerwear
+        if condition == "rainy":
+            if item.category == "outerwear":
+                score += 1.5
+            if item.category == "shoes" and "boot" in (item.name or "").lower():
+                score += 2.0
+        # Snowy -> big bonus for warm stuff
+        if condition == "snowy":
+            if item.warmth_score >= 7:
+                score += 2.5
+            else:
+                score -= 2.0
+
     return score
 
-def pick_outfit(items: List[Item], temp_f: float, occasion: str, limit: int = 4) -> List[Item]:
+def pick_outfit(
+    items: List[Item],
+    temp_f: float,
+    occasion: str,
+    condition: Optional[str] = None,
+    limit: int = 4,
+) -> List[Item]:
     """
     Score items and build a more realistic outfit:
       - Try to pick: 1 top, 1 bottom, 1 shoes
@@ -78,7 +110,7 @@ def pick_outfit(items: List[Item], temp_f: float, occasion: str, limit: int = 4)
     """
     scored = []
     for item in items:
-        s = score_item(item, temp_f, occasion)
+        s = score_item(item, temp_f, occasion, condition)
         if s > 0:
             scored.append((item, s))
 
@@ -114,14 +146,13 @@ def pick_outfit(items: List[Item], temp_f: float, occasion: str, limit: int = 4)
         outfit.append(shoes)
 
     # 2) Add outerwear only if it's not very hot
-    outerwear_needed = temp_f < 65  # tune threshold
+    outerwear_needed = temp_f < 65
     if outerwear_needed:
         ow = best_from("outerwear")
         if ow:
             outfit.append(ow)
 
-    # 3) If we still have slots and some categories were missing,
-    #    just fill from global best remaining (without duplicates).
+    # 3) Fill any remaining slots with best remaining items
     if len(outfit) < limit:
         used_ids = {i.id for i in outfit}
         scored.sort(key=lambda x: x[1], reverse=True)
