@@ -10,6 +10,7 @@ from flask_cors import CORS
 from backend.db import engine, Base, SessionLocal
 from backend.models import Item
 from backend.auth import auth_bp
+from backend.recommendations import rec_bp
 
 load_dotenv()
 app = Flask(__name__)
@@ -25,6 +26,7 @@ jwt = JWTManager(app)  # <-- initialize once here
 
 # blueprints
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
+app.register_blueprint(rec_bp, url_prefix="/api")
 
 @app.route("/health")
 def health():

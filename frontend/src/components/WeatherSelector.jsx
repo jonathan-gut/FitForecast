@@ -17,6 +17,15 @@ export default function WeatherSelector({ onWeatherSelect }) {
     { label: "Snowy", icon: SnowyIcon },
   ];
 
+  function notifyParent(nextTemp, nextCondition) {
+    if (typeof onWeatherSelect === "function") {
+      onWeatherSelect({
+        temperature: nextTemp,
+        condition: nextCondition,
+      });
+    }
+  }
+
   return (
     <div className="weather-box">
       {/* Tabs */}
@@ -56,7 +65,12 @@ export default function WeatherSelector({ onWeatherSelect }) {
               min="20"
               max="110"
               value={temperature}
-              onChange={(e) => setTemperature(Number(e.target.value))}
+              onChange={(e) => {
+                const nextTemp = Number(e.target.value);
+                setTemperature(nextTemp);
+                // keep current condition, only temp changes
+                notifyParent(nextTemp, condition);
+              }}
               className="temp-slider"
             />
 
@@ -79,10 +93,7 @@ export default function WeatherSelector({ onWeatherSelect }) {
                   }`}
                   onClick={() => {
                     setCondition(opt.label);
-                    onWeatherSelect?.({
-                      temperature,
-                      condition: opt.label,
-                    });
+                    notifyParent(temperature, opt.label);
                   }}
                 >
                   <div className="condition-icon">
