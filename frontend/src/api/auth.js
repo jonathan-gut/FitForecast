@@ -1,3 +1,5 @@
+import { getToken } from "../authStore";
+
 export async function apiRegister({ email, password, location = "", units = "F" }) {
     const res = await fetch("/api/auth/register", {
       method: "POST",
@@ -27,4 +29,21 @@ export async function apiRegister({ email, password, location = "", units = "F" 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Auth check failed");
     return data; // { user }
+  }
+
+  export async function apiUpdateProfile({ location, units }) {
+    const token = getToken();
+    if (!token) throw new Error("Not logged in");
+
+    const res = await fetch("/api/auth/me", {
+      method: "PATCH",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ location, units }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to update profile");
+    return data;
   }

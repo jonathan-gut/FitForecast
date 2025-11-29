@@ -5,15 +5,171 @@
   padding: 10px 16px;
   border-radius: 12px;
   box-shadow: 0 10px 24px rgba(0,0,0,0.15);
-  min-width: 220px;
+  min-width: 280px;
   text-align: left;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.profile-name {
+.profile-email {
   font-weight: 600;
   font-size: 0.95rem;
+}
+
+.profile-location {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.profile-edit-btn {
+  padding: 6px 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.profile-edit-btn:hover {
+  background: #0056b3;
+}
+
+/* Modal Overlay */
+.profile-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.profile-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.profile-modal h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  color: #222;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.units-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.unit-btn {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.unit-btn:hover {
+  border-color: #007bff;
+}
+
+.unit-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin: 10px 0;
+  padding: 8px 12px;
+  background: #f8d7da;
+  border-radius: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn-cancel,
+.btn-save {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.btn-cancel {
+  background: #e9ecef;
+  color: #333;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #dee2e6;
+}
+
+.btn-save {
+  background: #007bff;
+  color: white;
+}
+
+.btn-save:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.btn-cancel:disabled,
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

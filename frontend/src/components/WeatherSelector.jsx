@@ -1,14 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SunnyIcon from "../assets/Sunny.svg";
 import CloudyIcon from "../assets/Cloudy.svg";
 import RainyIcon from "../assets/Rainy.svg";
 import SnowyIcon from "../assets/Snowy.svg";
+import { apiGetSavedWeather } from "../api/recommendations";
 import "./WeatherSelector.css";
 
-export default function WeatherSelector({ onWeatherSelect }) {
+export default function WeatherSelector({ onWeatherSelect, userUnits }) {
   const [activeTab, setActiveTab] = useState("manual");
   const [temperature, setTemperature] = useState(70);
   const [condition, setCondition] = useState("");
+  const [savedWeather, setSavedWeather] = useState(null);
+  const [loadingWeather, setLoadingWeather] = useState(false);
+  const [weatherError, setWeatherError] = useState("");
 
   const conditionOptions = [
     { label: "Sunny", icon: SunnyIcon },
@@ -17,11 +21,35 @@ export default function WeatherSelector({ onWeatherSelect }) {
     { label: "Snowy", icon: SnowyIcon },
   ];
 
-  function notifyParent(nextTemp, nextCondition) {
+  // Fetch saved weather when component mounts or when "Saved" tab is clicked or units change
+  useEffect(() => {
+    if (activeTab === "saved") {
+      setLoadingWeather(true);
+      setWeatherError("");
+      apiGetSavedWeather()
+        .then((data) => {
+          setSavedWeather(data);
+          // Auto-select the saved weather
+          const temp = Math.round(data.current_temperature);
+          setTemperature(temp);
+          // You could map weather conditions based on API data if needed
+          notifyParent(temp, condition);
+        })
+        .catch((err) => {
+          setWeatherError(err.message);
+        })
+        .finally(() => {
+          setLoadingWeather(false);
+        });
+    }
+  }, [activeTab, userUnits]);
+
+  function notifyParent(nextTemp, nextCondition, source = "manual") {
     if (typeof onWeatherSelect === "function") {
       onWeatherSelect({
         temperature: nextTemp,
         condition: nextCondition,
+        source: source,
       });
     }
   }
@@ -49,8 +77,40 @@ export default function WeatherSelector({ onWeatherSelect }) {
 
       <div className="weather-content">
         {activeTab === "saved" ? (
-          <div className="saved-placeholder">
-            <p>Saved presets will appear here...</p>
+          <div className="saved-weather">
+            {loadingWeather ? (
+              <p>Loading your saved location weather...</p>
+            ) : weatherError ? (
+              <p className="error-text">Error: {weatherError}</p>
+            ) : savedWeather ? (
+              <div className="saved-weather-display">
+                <p className="location-name">
+                  {savedWeather._resolved_location?.name || "Your Location"}
+                </p>
+                <div className="temp-display">
+                  <span className="current-temp">
+                    {Math.round(savedWeather.current_temperature)}°{savedWeather.user_units || "F"}
+                  </span>
+                  <span className="temp-range">
+                    H: {Math.round(savedWeather.temperature_high)}° L: {Math.round(savedWeather.temperature_low)}°
+                  </span>
+                </div>
+                <p className="timezone-info">
+                  {savedWeather._resolved_location?.country} • {savedWeather.timezone}
+                </p>
+                <button
+                  className="use-saved-btn"
+                  onClick={() => {
+                    setTemperature(Math.round(savedWeather.current_temperature));
+                    notifyParent(Math.round(savedWeather.current_temperature), condition, "saved");
+                  }}
+                >
+                  Use This Weather
+                </button>
+              </div>
+            ) : (
+              <p>No saved location found. Add one in your profile.</p>
+            )}
           </div>
         ) : (
           <div className="manual-weather-full">

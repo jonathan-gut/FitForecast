@@ -10,16 +10,11 @@ import OccasionSelector from "../components/OccasionSelector";
 export default function Dashboard() {
   const [me, setMe] = useState(null);
   const [err, setErr] = useState("");
+  const [occasion, setOccasion] = useState("Casual");
+  const [weather, setWeather] = useState({ temperature: 70, condition: "", source: "manual" });
+  const [generating, setGenerating] = useState(false);
+  const [outfit, setOutfit] = useState(null);
 
-  const [occasion, setOccasion] = useState("casual_outing"); // key used by backend
-  const [tempF, setTempF] = useState(null);
-  const [weatherCondition, setWeatherCondition] = useState("");
-
-  const [outfit, setOutfit] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [recErr, setRecErr] = useState("");
-
-  // Fetch logged-in user
   useEffect(() => {
     const t = getToken();
     if (!t) {
@@ -31,102 +26,108 @@ export default function Dashboard() {
       .catch((e) => setErr(e.message));
   }, []);
 
-  async function handleGenerate() {
-    setRecErr("");
-    setOutfit([]);
+  const handleProfileUpdate = (updatedUser) => {
+    setMe(updatedUser);
+  };
 
-    if (tempF == null) {
-      setRecErr("Please pick a temperature in the weather box.");
+  const handleGenerateOutfit = async () => {
+    if (!weather.temperature) {
+      setErr("Please select a temperature");
       return;
     }
-
-    setLoading(true);
+    setGenerating(true);
+    setErr("");
     try {
-      const data = await apiRecommend({
-      temp_f: tempF,
-      occasion,
-      condition: weatherCondition || null,
-});
-      setOutfit(data.items || []);
+      const result = await apiRecommend({
+        temp_f: weather.temperature,
+        occasion: occasion,
+        condition: weather.condition,
+      });
+      setOutfit(result);
     } catch (e) {
-      setRecErr(e.message || "Failed to generate outfit.");
+      setErr(e.message);
     } finally {
-      setLoading(false);
+      setGenerating(false);
     }
-  }
+  };
 
   return (
     <div className="dashboard-page">
       <header className="dashboard-header">
         <h1 className="dashboard-title">FitForecast</h1>
-        {me && <ProfileCard email={me.email} />}
-        {err && !me && <p className="error-text">{err}</p>}
+        {me && (
+          <ProfileCard 
+            email={me.email}
+            location={me.location}
+            units={me.units}
+            role={me.role}
+            onUpdate={handleProfileUpdate}
+          />
+        )}
       </header>
 
       <div className="main-panel">
+
         {/* LEFT COLUMN */}
         <div className="left-panel">
-          <WeatherSelector
-            onWeatherSelect={({ temperature, condition }) => {
-              setTempF(temperature);
-              setWeatherCondition(condition);
-            }}
+          <WeatherSelector 
+            onWeatherSelect={setWeather}
+            userUnits={me?.units}
           />
-
           <OccasionSelector onSelect={setOccasion} />
 
-          <button
+          <button 
             className="generate-btn"
-            onClick={handleGenerate}
-            disabled={loading}
+            onClick={handleGenerateOutfit}
+            disabled={generating}
           >
-            {loading ? "Generating..." : "Generate Outfit"}
+            {generating ? "Generating..." : "Generate Outfit"}
           </button>
-
-          {recErr && <p className="error-text">{recErr}</p>}
         </div>
 
         {/* RIGHT COLUMN */}
         <div className="right-panel">
           <div className="outfit-preview">
-            {tempF != null && (
-              <p className="current-weather">
-                Using {tempF}°F
-                {weatherCondition ? ` · ${weatherCondition}` : ""}
-              </p>
-            )}
-
-            {outfit.length === 0 && !loading && (
-              <p className="placeholder-text">
-                Choose weather & occasion, then click{" "}
-                <strong>"Generate Outfit"</strong>.
-              </p>
-            )}
-
-            {outfit.length > 0 && (
-              <ul className="outfit-list">
-                {outfit.map((item) => (
-                  <li key={item.id} className="outfit-item">
-                    <div className="item-name">{item.name}</div>
-                    <div className="item-meta">
-                      {item.category} · {item.formality} · warmth{" "}
-                      {item.warmth_score} · {item.activity_comfort}
+            {err && <div className="error-message">{err}</div>}
+            {outfit ? (
+              <div className="outfit-result">
+                <h2 className="outfit-title">Your Outfit</h2>
+                <div className="outfit-details">
+                  <p className="occasion-badge">{outfit.occasion}</p>
+                  <p className="weather-info">
+                    {outfit.temp_f}°F {outfit.condition && `• ${outfit.condition}`}
+                  </p>
+                  <p className="weather-source">
+                    (Source: {weather.source === "saved" ? "Saved Location" : "Manual"})
+                  </p>
+                </div>
+                <div className="outfit-items">
+                  {outfit.items && outfit.items.map((item) => (
+                    <div key={item.id} className="outfit-item">
+                      <div className="item-name">{item.name}</div>
+                      <div className="item-meta">
+                        {item.category && <span>{item.category}</span>}
+                        {item.formality && <span>{item.formality}</span>}
+                      </div>
                     </div>
-                  </li>
-                ))}
-              </ul>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="empty-state">
+                <p>Select weather and occasion, then click "Generate Outfit" to get started</p>
+              </div>
             )}
-
-            {loading && <p className="loading-text">Picking an outfit...</p>}
           </div>
 
-          <button
+          <button 
             className="save-outfit-btn"
-            disabled={outfit.length === 0}
+            disabled={!outfit}
           >
-            Save Outfit (coming soon)
+            Save Outfit
           </button>
         </div>
+
       </div>
     </div>
   );
