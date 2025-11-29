@@ -28,3 +28,17 @@ export async function apiRegister({ email, password, location = "", units = "F" 
     if (!res.ok) throw new Error(data.error || "Auth check failed");
     return data; // { user }
   }
+
+  export async function apiUpdateProfile(token, { location, units }) {
+    const res = await fetch("/api/auth/me", {
+      method: "PUT",
+      headers: { 
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ location, units }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Profile update failed");
+    return data; // { user }
+  }
