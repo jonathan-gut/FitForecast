@@ -56,7 +56,13 @@ export default function Dashboard() {
   return (
     <div className="dashboard-page">
       <header className="dashboard-header">
-        <h1 className="dashboard-title">FitForecast</h1>
+        <h1 
+          className="dashboard-title"
+          onClick={() => navigate("/")}
+          style={{ cursor: "pointer" }}
+        >
+          FitForecast
+        </h1>
         <div className="header-actions">
           {me?.role === "admin" && (
             <button 
@@ -85,6 +91,7 @@ export default function Dashboard() {
           <WeatherSelector 
             onWeatherSelect={setWeather}
             userUnits={me?.units}
+            userLocation={me?.location}
           />
           <OccasionSelector onSelect={setOccasion} />
 
