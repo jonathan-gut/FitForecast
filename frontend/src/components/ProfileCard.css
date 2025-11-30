@@ -25,16 +25,41 @@
 }
 
 .profile-edit-btn {
-  padding: 6px 12px;
-  background: #007bff;
-  color: white;
+  padding: 8px;
+  background: transparent;
+  color: black;
   border: none;
-  border-radius: 6px;
+  border-radius: 50%;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
-  transition: background 0.2s;
+  transition: all 0.2s;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  outline: none;
+}
+
+.profile-edit-btn:hover {
+  transform: rotate(20deg);
+}
+
+.profile-edit-btn:focus {
+  outline: none;
+}
+
+.profile-edit-btn:active {
+  outline: none;
+}
+
+.cog-icon {
+  width: 20px;
+  height: 20px;
+  stroke: black;
 }
 
 .profile-edit-btn:hover {

@@ -18,6 +18,28 @@
   gap: 1rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-link-btn {
+  padding: 10px 16px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.admin-link-btn:hover {
+  background: #e63946;
+}
+
 .dashboard-title {
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 800;

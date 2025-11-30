@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getToken } from "../authStore";
 import { apiMe } from "../api/auth";
 import { apiRecommend } from "../api/recommendations";
@@ -8,6 +9,7 @@ import WeatherSelector from "../components/WeatherSelector";
 import OccasionSelector from "../components/OccasionSelector";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [me, setMe] = useState(null);
   const [err, setErr] = useState("");
   const [occasion, setOccasion] = useState("Casual");
@@ -55,15 +57,25 @@ export default function Dashboard() {
     <div className="dashboard-page">
       <header className="dashboard-header">
         <h1 className="dashboard-title">FitForecast</h1>
-        {me && (
-          <ProfileCard 
-            email={me.email}
-            location={me.location}
-            units={me.units}
-            role={me.role}
-            onUpdate={handleProfileUpdate}
-          />
-        )}
+        <div className="header-actions">
+          {me?.role === "admin" && (
+            <button 
+              className="admin-link-btn"
+              onClick={() => navigate("/admin")}
+            >
+              Admin Panel
+            </button>
+          )}
+          {me && (
+            <ProfileCard 
+              email={me.email}
+              location={me.location}
+              units={me.units}
+              role={me.role}
+              onUpdate={handleProfileUpdate}
+            />
+          )}
+        </div>
       </header>
 
       <div className="main-panel">

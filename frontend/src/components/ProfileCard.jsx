@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { apiUpdateProfile } from "../api/auth";
+import CogWheelIcon from "../assets/CogWheel.svg";
 import "./ProfileCard.css";
 
 export default function ProfileCard({ email, location, units, onUpdate }) {
@@ -41,7 +42,7 @@ export default function ProfileCard({ email, location, units, onUpdate }) {
           {location && <div className="profile-location">{location}</div>}
         </div>
         <button className="profile-edit-btn" onClick={() => setIsOpen(true)}>
-          Edit
+          <img src={CogWheelIcon} alt="Edit" className="cog-icon" />
         </button>
       </div>
 
