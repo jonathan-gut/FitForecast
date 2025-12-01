@@ -78,12 +78,48 @@ def me():
         user = db.get(User, int(user_id))   # SQLAlchemy 2.x style
         if not user:
             return jsonify({"error": "user not found"}), 404
+        profile = db.query(Profile).filter_by(user_id=user.id).first()
         return jsonify({
             "user": {
                 "id": user.id,
                 "email": user.email,
-                "role": user.role
+                "role": user.role,
+                "location": profile.location_text if profile else None,
+                "units": profile.units if profile else "F"
             }
         })
+    finally:
+        db.close()
+
+@auth_bp.patch("/me")
+@jwt_required()
+def update_profile():
+    user_id = get_jwt_identity()
+    data = request.get_json(force=True) or {}
+    location = data.get("location")
+    units = data.get("units")
+    
+    db = SessionLocal()
+    try:
+        profile = db.query(Profile).filter_by(user_id=int(user_id)).first()
+        if not profile:
+            return jsonify({"error": "profile not found"}), 404
+        
+        if location is not None:
+            profile.location_text = location.strip() if isinstance(location, str) else ""
+        if units is not None:
+            profile.units = units.strip().upper() if isinstance(units, str) else "F"
+        
+        db.commit()
+        user = db.get(User, int(user_id))
+        return jsonify({
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "role": user.role,
+                "location": profile.location_text,
+                "units": profile.units
+            }
+        }), 200
     finally:
         db.close()
