@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt
 from functools import wraps
 from backend.db import SessionLocal
 from backend.models import User, Profile, Item
-from backend.rules import score_item
+from backend.rules import score_item, pick_outfit
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -101,7 +101,7 @@ def delete_user(user_id):
 def debug_outfit_scoring():
     data = request.get_json(force=True) or {}
     temp_f = data.get("temp_f")
-    occasion = data.get("occasion", "casual_outing")
+    occasion = (data.get("occasion") or "casual_outing").strip()
     condition = data.get("condition")
     
     if temp_f is None:
@@ -115,8 +115,18 @@ def debug_outfit_scoring():
     db = SessionLocal()
     try:
         items = db.query(Item).all()
-        scored = []
         
+        # Get the actual outfit that would be recommended to users
+        outfit_items = pick_outfit(
+            items,
+            temp_f=temp_f,
+            occasion=occasion,
+            condition=condition,
+            limit=4,
+        )
+        
+        # Score all items for the full table display
+        scored = []
         for item in items:
             score = score_item(item, temp_f, occasion, condition)
             scored.append({
@@ -131,6 +141,20 @@ def debug_outfit_scoring():
         
         scored.sort(key=lambda x: x["score"], reverse=True)
         
+        # Convert outfit items to the same format
+        top_picks = [
+            {
+                "id": item.id,
+                "name": item.name,
+                "category": item.category,
+                "score": score_item(item, temp_f, occasion, condition),
+                "warmth_score": item.warmth_score,
+                "formality": item.formality,
+                "activity_comfort": item.activity_comfort,
+            }
+            for item in outfit_items
+        ]
+        
         return jsonify({
             "test_params": {
                 "temp_f": temp_f,
@@ -138,7 +162,7 @@ def debug_outfit_scoring():
                 "condition": condition,
             },
             "all_items_scored": scored,
-            "top_picks": scored[:4], 
+            "top_picks": top_picks, 
         }), 200
     finally:
         db.close()
