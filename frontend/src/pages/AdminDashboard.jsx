@@ -4,6 +4,7 @@ import { getToken } from "../authStore";
 import { apiMe } from "../api/auth";
 import { apiGetUsers, apiUpdateUserRole, apiDeleteUser } from "../api/admin";
 import BackArrowIcon from "../assets/BackArrow.svg";
+import RuleEngineDebugger from "../components/RuleEngineDebugger";
 import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
@@ -156,6 +157,9 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Rule Engine Debugger */}
+      <RuleEngineDebugger />
 
       {deleteConfirm && (
         <div className="delete-modal-overlay" onClick={() => setDeleteConfirm(null)}>
