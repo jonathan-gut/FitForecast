@@ -41,7 +41,10 @@ net start postgresql-x64-16                 # Windows
 ```
 ensure psql is in your PATH (Apple Silicon):
 ```
-echo 'export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc # macOS
+source ~/.zshrc
+
+echo 'export PATH="/usr/local/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc    # Windows
 source ~/.zshrc
 ```
 
