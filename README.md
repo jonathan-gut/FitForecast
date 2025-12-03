@@ -36,6 +36,8 @@ Start Postgres and create the local database:
 ```
 brew services start postgresql@16           # macOS (if not running already)
 createdb fitforecast
+
+net start postgresql-x64-16                 # Windows
 ```
 ensure psql is in your PATH (Apple Silicon):
 ```
