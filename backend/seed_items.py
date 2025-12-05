@@ -1,5 +1,3 @@
-# backend/seed_items.py
-
 from backend.db import SessionLocal
 from backend.models import Item
 
@@ -14,7 +12,7 @@ def main():
 
     items = []
 
-    # === TOPS ===
+    # === BASE ITEMS ===
     tops = [
         ("Tank Top", "casual", 1, "outdoor"),
         ("T-Shirt", "casual", 2, "outdoor"),
@@ -28,7 +26,6 @@ def main():
         ("Workout Tee", "workout", 1, "workout"),
     ]
 
-    # === BOTTOMS ===
     bottoms = [
         ("Shorts", "casual", 1, "outdoor"),
         ("Running Shorts", "workout", 1, "workout"),
@@ -42,7 +39,6 @@ def main():
         ("Slacks", "business", 4, "indoor"),
     ]
 
-    # === OUTERWEAR ===
     outerwear = [
         ("Light Jacket", "casual", 5, "outdoor"),
         ("Windbreaker", "casual", 4, "outdoor"),
@@ -56,7 +52,6 @@ def main():
         ("Fleece Jacket", "casual", 6, "outdoor"),
     ]
 
-    # === SHOES ===
     shoes = [
         ("Sneakers", "casual", 2, "outdoor"),
         ("Running Shoes", "workout", 2, "workout"),
@@ -70,43 +65,37 @@ def main():
         ("Slip-ons", "casual", 1, "indoor"),
     ]
 
-    # Duplicate each category 2–3 times with slight variations to reach ~100 items
-    def expand_category(base_list, category_name):
+    def expand_to_25(base_list, category_name):
         expanded = []
-        for name, formality, warmth, activity in base_list:
+        i = 0
+        while len(expanded) < 25:
+            name, formality, warmth, activity = base_list[i % len(base_list)]
+            variant_num = len(expanded) // len(base_list)
+            item_name = f"{name} (v{variant_num})" if variant_num > 0 else name
+
             expanded.append(
                 Item(
-                    name=name,
+                    name=item_name,
                     category=category_name,
                     formality=formality,
                     warmth_score=warmth,
                     activity_comfort=activity,
                 )
             )
-            # Slight variation item
-            expanded.append(
-                Item(
-                    name=f"{name} (Variant)",
-                    category=category_name,
-                    formality=formality,
-                    warmth_score=warmth,
-                    activity_comfort=activity,
-                )
-            )
+            i += 1
         return expanded
 
-    items.extend(expand_category(tops, "top"))
-    items.extend(expand_category(bottoms, "bottom"))
-    items.extend(expand_category(outerwear, "outerwear"))
-    items.extend(expand_category(shoes, "shoes"))
+    items.extend(expand_to_25(tops, "top"))
+    items.extend(expand_to_25(bottoms, "bottom"))
+    items.extend(expand_to_25(outerwear, "outerwear"))
+    items.extend(expand_to_25(shoes, "shoes"))
 
-    # Trim or pad to exactly 100 items
-    items = items[:100]
+    print(f"Prepared {len(items)} items for insertion...")
 
     db.add_all(items)
     db.commit()
     db.close()
-    print(f"Seeded {len(items)} high quality items.")
+    print("Seeded exactly 100 high-quality items.")
 
 if __name__ == "__main__":
     main()
